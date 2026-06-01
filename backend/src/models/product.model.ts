@@ -63,6 +63,7 @@ const productSchema = new Schema<CouponProduct, ProductModel>(
   },
 );
 
+// This index supports the main read path for unsold products by type.
 productSchema.index({ isSold: 1, type: 1 });
 
 export type ProductDocument = HydratedDocument<CouponProduct>;
