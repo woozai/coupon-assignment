@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import { mapProductToPublicResponse } from '../mappers/product-response.mapper.js';
 import { productService } from '../services/product.service.js';
 import { asyncHandler } from '../utils/async-handler.js';
 
@@ -16,7 +17,7 @@ export const getResellerProductByIdController = asyncHandler(
       request.params.productId,
     );
 
-    response.status(200).json(product);
+    response.status(200).json(mapProductToPublicResponse(product));
   },
 );
 
@@ -24,6 +25,8 @@ export const listResellerProductsController = asyncHandler(
   async (_request: Request, response: Response): Promise<void> => {
     const products = await productService.listAvailableProducts();
 
-    response.status(200).json(products);
+    response
+      .status(200)
+      .json(products.map((product) => mapProductToPublicResponse(product)));
   },
 );

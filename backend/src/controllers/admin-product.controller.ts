@@ -1,5 +1,8 @@
 import type { Request, Response } from 'express';
 import { asyncHandler } from '../utils/async-handler.js';
+import {
+  mapProductToAdminResponse,
+} from '../mappers/product-response.mapper.js';
 import { productService } from '../services/product.service.js';
 import {
   CreateCouponInput,
@@ -18,7 +21,7 @@ export const createAdminProductController = asyncHandler(
   ): Promise<void> => {
     const createdProduct = await productService.createProduct(request.body);
 
-    response.status(201).json(createdProduct);
+    response.status(201).json(mapProductToAdminResponse(createdProduct));
   },
 );
 
@@ -31,7 +34,7 @@ export const deleteAdminProductController = asyncHandler(
       request.params.productId,
     );
 
-    response.status(200).json(deletedProduct);
+    response.status(200).json(mapProductToAdminResponse(deletedProduct));
   },
 );
 
@@ -42,7 +45,7 @@ export const getAdminProductByIdController = asyncHandler(
   ): Promise<void> => {
     const product = await productService.getProductById(request.params.productId);
 
-    response.status(200).json(product);
+    response.status(200).json(mapProductToAdminResponse(product));
   },
 );
 
@@ -50,7 +53,9 @@ export const listAdminProductsController = asyncHandler(
   async (_request: Request, response: Response): Promise<void> => {
     const products = await productService.listProducts();
 
-    response.status(200).json(products);
+    response
+      .status(200)
+      .json(products.map((product) => mapProductToAdminResponse(product)));
   },
 );
 
@@ -64,6 +69,6 @@ export const updateAdminProductController = asyncHandler(
       request.body,
     );
 
-    response.status(200).json(updatedProduct);
+    response.status(200).json(mapProductToAdminResponse(updatedProduct));
   },
 );
