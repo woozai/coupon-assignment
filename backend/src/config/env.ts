@@ -2,6 +2,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+type AppNodeEnv = 'development' | 'test' | 'production';
+
 const getRequiredEnv = (key: string): string => {
   const environmentValue = process.env[key];
 
@@ -12,19 +14,48 @@ const getRequiredEnv = (key: string): string => {
   return environmentValue;
 };
 
+const getNodeEnv = (): AppNodeEnv => {
+  const environmentValue = process.env.NODE_ENV ?? 'development';
+
+  if (
+    environmentValue === 'development' ||
+    environmentValue === 'test' ||
+    environmentValue === 'production'
+  ) {
+    return environmentValue;
+  }
+
+  throw new Error(
+    'Invalid NODE_ENV value. Expected development, test, or production.',
+  );
+};
+
+const getPort = (): number => {
+  const rawPortValue = process.env.PORT ?? '4000';
+  const parsedPort = Number(rawPortValue);
+
+  if (!Number.isInteger(parsedPort) || parsedPort <= 0) {
+    throw new Error('Invalid PORT value. Expected a positive integer.');
+  }
+
+  return parsedPort;
+};
+
 export interface AppEnv {
   CORS_ORIGIN: string;
+  JWT_EXPIRES_IN: string;
+  JWT_SECRET: string;
   MONGODB_URI: string;
-  NODE_ENV: string;
+  NODE_ENV: AppNodeEnv;
   PORT: number;
-  RESELLER_API_TOKEN: string;
 }
 
 // Centralize env parsing so the rest of the app can rely on typed config values.
 export const env: AppEnv = {
   CORS_ORIGIN: process.env.CORS_ORIGIN ?? 'http://localhost:5173',
+  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN ?? '1h',
+  JWT_SECRET: getRequiredEnv('JWT_SECRET'),
   MONGODB_URI: getRequiredEnv('MONGODB_URI'),
-  NODE_ENV: process.env.NODE_ENV ?? 'development',
-  PORT: Number(process.env.PORT ?? 4000),
-  RESELLER_API_TOKEN: getRequiredEnv('RESELLER_API_TOKEN'),
+  NODE_ENV: getNodeEnv(),
+  PORT: getPort(),
 };
