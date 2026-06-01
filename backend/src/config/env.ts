@@ -20,6 +20,7 @@ export interface AppEnv {
   RESELLER_API_TOKEN: string;
 }
 
+// Centralize env parsing so the rest of the app can rely on typed config values.
 export const env: AppEnv = {
   CORS_ORIGIN: process.env.CORS_ORIGIN ?? 'http://localhost:5173',
   MONGODB_URI: getRequiredEnv('MONGODB_URI'),
