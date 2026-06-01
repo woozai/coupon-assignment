@@ -8,6 +8,8 @@ import {
   listAdminProductsController,
   updateAdminProductController,
 } from '../controllers/admin-product.controller.js';
+import { authenticateMiddleware } from '../middlewares/authenticate.middleware.js';
+import { authorizeRoleMiddleware } from '../middlewares/authorize-role.middleware.js';
 import { validateRequestMiddleware } from '../middlewares/validate-request.middleware.js';
 import {
   validateCreateProduct,
@@ -20,6 +22,8 @@ interface ProductIdParams {
 }
 
 const adminRouter = Router();
+
+adminRouter.use(authenticateMiddleware, authorizeRoleMiddleware('admin'));
 
 adminRouter.get('/api/admin/products', listAdminProductsController);
 adminRouter.post(

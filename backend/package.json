@@ -9,10 +9,13 @@
     "start": "node dist/server.js"
   },
   "dependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "bcryptjs": "^3.0.3",
     "dotenv": "^16.6.1",
-    "express": "^4.21.2"
-    ,
+    "express": "^4.21.2",
     "express-validator": "^7.2.1",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.15.1"
   },
   "devDependencies": {

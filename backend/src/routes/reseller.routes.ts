@@ -5,6 +5,8 @@ import {
   getResellerProductByIdController,
   listResellerProductsController,
 } from '../controllers/reseller-product.controller.js';
+import { authenticateMiddleware } from '../middlewares/authenticate.middleware.js';
+import { authorizeRoleMiddleware } from '../middlewares/authorize-role.middleware.js';
 import { validateRequestMiddleware } from '../middlewares/validate-request.middleware.js';
 import { validateProductIdParam } from '../validators/product.validator.js';
 
@@ -13,6 +15,8 @@ interface ProductIdParams {
 }
 
 const resellerRouter = Router();
+
+resellerRouter.use(authenticateMiddleware, authorizeRoleMiddleware('reseller'));
 
 resellerRouter.get('/api/v1/products', listResellerProductsController);
 resellerRouter.get(
