@@ -1,6 +1,9 @@
 import type { NextFunction, Request, Response } from 'express';
 import { AuthRole } from '../types/auth.types.js';
-import { ApiError } from '../utils/api-error.js';
+import {
+  createForbiddenError,
+  createUnauthorizedError,
+} from '../utils/domain-errors.js';
 
 export const authorizeRoleMiddleware = (requiredRole: AuthRole) => {
   return (
@@ -9,12 +12,12 @@ export const authorizeRoleMiddleware = (requiredRole: AuthRole) => {
     next: NextFunction,
   ): void => {
     if (!request.authenticatedUser) {
-      next(new ApiError('Unauthorized.', 401, 'UNAUTHORIZED'));
+      next(createUnauthorizedError());
       return;
     }
 
     if (request.authenticatedUser.role !== requiredRole) {
-      next(new ApiError('Forbidden.', 403, 'FORBIDDEN'));
+      next(createForbiddenError());
       return;
     }
 

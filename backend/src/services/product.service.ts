@@ -1,4 +1,7 @@
 import { ApiError } from '../utils/api-error.js';
+import {
+  createProductNotFoundError,
+} from '../utils/domain-errors.js';
 import { productRepository } from '../repositories/product.repository.js';
 import {
   CouponProduct,
@@ -12,7 +15,7 @@ const getProductOrThrow = async (productId: string): Promise<CouponProduct> => {
   const existingProduct = await productRepository.findById(productId);
 
   if (!existingProduct) {
-    throw new ApiError('Product not found.', 404, 'PRODUCT_NOT_FOUND');
+    throw createProductNotFoundError();
   }
 
   return existingProduct.toObject();
@@ -63,7 +66,7 @@ export const productService = {
     const deletedProduct = await productRepository.deleteById(productId);
 
     if (!deletedProduct) {
-      throw new ApiError('Product not found.', 404, 'PRODUCT_NOT_FOUND');
+      throw createProductNotFoundError();
     }
 
     return deletedProduct.toObject();
@@ -108,7 +111,7 @@ export const productService = {
     );
 
     if (!updatedProduct) {
-      throw new ApiError('Product not found.', 404, 'PRODUCT_NOT_FOUND');
+      throw createProductNotFoundError();
     }
 
     return updatedProduct.toObject();

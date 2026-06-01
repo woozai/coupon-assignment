@@ -2,7 +2,9 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import type { SignOptions } from 'jsonwebtoken';
 import { env } from '../config/env.js';
-import { ApiError } from '../utils/api-error.js';
+import {
+  createUnauthorizedError,
+} from '../utils/domain-errors.js';
 import {
   AdminLoginInput,
   AuthenticatedUser,
@@ -13,7 +15,7 @@ const getJwtPayload = (token: string): AuthenticatedUser => {
   const decodedToken = jwt.verify(token, env.JWT_SECRET);
 
   if (typeof decodedToken === 'string') {
-    throw new ApiError('Invalid authentication token.', 401, 'UNAUTHORIZED');
+    throw createUnauthorizedError('Invalid authentication token.');
   }
 
   const { email, role, sub } = decodedToken;
@@ -22,7 +24,7 @@ const getJwtPayload = (token: string): AuthenticatedUser => {
     typeof sub !== 'string' ||
     (role !== 'admin' && role !== 'reseller')
   ) {
-    throw new ApiError('Invalid authentication token.', 401, 'UNAUTHORIZED');
+    throw createUnauthorizedError('Invalid authentication token.');
   }
 
   return {
@@ -51,7 +53,7 @@ export const authService = {
 
   loginAdmin: async (loginInput: AdminLoginInput): Promise<string> => {
     if (loginInput.email !== env.ADMIN_EMAIL) {
-      throw new ApiError('Invalid admin credentials.', 401, 'UNAUTHORIZED');
+      throw createUnauthorizedError('Invalid admin credentials.');
     }
 
     const passwordMatches = await bcrypt.compare(
@@ -60,7 +62,7 @@ export const authService = {
     );
 
     if (!passwordMatches) {
-      throw new ApiError('Invalid admin credentials.', 401, 'UNAUTHORIZED');
+      throw createUnauthorizedError('Invalid admin credentials.');
     }
 
     // Keep the admin identity small and env-backed so the assignment avoids full user management.

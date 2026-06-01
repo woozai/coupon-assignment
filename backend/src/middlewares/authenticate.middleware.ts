@@ -1,19 +1,18 @@
 import type { NextFunction, Request, Response } from 'express';
 import { authService } from '../services/auth.service.js';
 import { ApiError } from '../utils/api-error.js';
+import { createUnauthorizedError } from '../utils/domain-errors.js';
 
 const getBearerToken = (authorizationHeader?: string): string => {
   if (!authorizationHeader) {
-    throw new ApiError('Missing authorization header.', 401, 'UNAUTHORIZED');
+    throw createUnauthorizedError('Missing authorization header.');
   }
 
   const [scheme, token] = authorizationHeader.split(' ');
 
   if (scheme !== 'Bearer' || !token) {
-    throw new ApiError(
+    throw createUnauthorizedError(
       'Authorization header must use Bearer token format.',
-      401,
-      'UNAUTHORIZED',
     );
   }
 
@@ -37,6 +36,6 @@ export const authenticateMiddleware = (
       return;
     }
 
-    next(new ApiError('Invalid authentication token.', 401, 'UNAUTHORIZED'));
+    next(createUnauthorizedError('Invalid authentication token.'));
   }
 };

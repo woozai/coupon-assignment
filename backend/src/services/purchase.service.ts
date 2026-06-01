@@ -4,7 +4,10 @@ import {
   PurchaseProductInput,
   PurchaseProductResponse,
 } from '../types/product.types.js';
-import { ApiError } from '../utils/api-error.js';
+import {
+  createProductAlreadySoldError,
+  createProductNotFoundError,
+} from '../utils/domain-errors.js';
 import { assertValidResellerPrice } from './pricing.service.js';
 
 export const purchaseService = {
@@ -15,17 +18,13 @@ export const purchaseService = {
     const existingProduct = await productRepository.findById(productId);
 
     if (!existingProduct) {
-      throw new ApiError('Product not found.', 404, 'PRODUCT_NOT_FOUND');
+      throw createProductNotFoundError();
     }
 
     const product = existingProduct.toObject();
 
     if (product.isSold) {
-      throw new ApiError(
-        'Product has already been sold.',
-        409,
-        'PRODUCT_ALREADY_SOLD',
-      );
+      throw createProductAlreadySoldError();
     }
 
     assertValidResellerPrice(
@@ -36,11 +35,7 @@ export const purchaseService = {
     const soldProduct = await purchaseRepository.markProductAsSold(productId);
 
     if (!soldProduct) {
-      throw new ApiError(
-        'Product has already been sold.',
-        409,
-        'PRODUCT_ALREADY_SOLD',
-      );
+      throw createProductAlreadySoldError();
     }
 
     // Return the redeemable value only after the atomic sold-state update succeeds.
