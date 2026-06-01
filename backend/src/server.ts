@@ -1,7 +1,16 @@
 import app from './app.js';
+import { connectDatabase } from './config/database.js';
+import { env } from './config/env.js';
 
-const port = Number(process.env.PORT ?? 4000);
+const startServer = async (): Promise<void> => {
+  await connectDatabase();
 
-app.listen(port, () => {
-  console.log(`Backend server listening on http://localhost:${port}`);
+  app.listen(env.PORT, () => {
+    console.log(`Backend server listening on http://localhost:${env.PORT}`);
+  });
+};
+
+startServer().catch((error: unknown) => {
+  console.error('Failed to start backend server.', error);
+  process.exit(1);
 });

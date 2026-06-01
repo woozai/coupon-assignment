@@ -9,7 +9,10 @@
     "start": "node dist/server.js"
   },
   "dependencies": {
+    "dotenv": "^16.6.1",
     "express": "^4.21.2"
+    ,
+    "mongoose": "^8.15.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",
