@@ -1,6 +1,6 @@
-import type { NextFunction, Request, Response } from 'express';
 import { Router } from 'express';
-import type { Request as TypedRequest } from 'express';
+import type { ParamsDictionary } from 'express-serve-static-core';
+import { purchaseProductController } from '../controllers/purchase.controller.js';
 import {
   getResellerProductByIdController,
   listResellerProductsController,
@@ -8,9 +8,14 @@ import {
 import { authenticateMiddleware } from '../middlewares/authenticate.middleware.js';
 import { authorizeRoleMiddleware } from '../middlewares/authorize-role.middleware.js';
 import { validateRequestMiddleware } from '../middlewares/validate-request.middleware.js';
+import {
+  PurchaseProductInput,
+  PurchaseProductResponse,
+} from '../types/product.types.js';
+import { validatePurchaseProduct } from '../validators/purchase.validator.js';
 import { validateProductIdParam } from '../validators/product.validator.js';
 
-interface ProductIdParams {
+interface ProductIdParams extends ParamsDictionary {
   productId: string;
 }
 
@@ -19,18 +24,22 @@ const resellerRouter = Router();
 resellerRouter.use(authenticateMiddleware, authorizeRoleMiddleware('reseller'));
 
 resellerRouter.get('/api/v1/products', listResellerProductsController);
-resellerRouter.get(
+resellerRouter.get<ProductIdParams>(
   '/api/v1/products/:productId',
-  validateProductIdParam(),
+  ...validateProductIdParam(),
   validateRequestMiddleware,
-  (request: Request, response: Response, next: NextFunction) => {
-    // The validator guarantees the route param exists before the typed controller uses it.
-    void getResellerProductByIdController(
-      request as unknown as TypedRequest<ProductIdParams>,
-      response,
-      next,
-    );
-  },
+  getResellerProductByIdController,
+);
+resellerRouter.post<
+  ProductIdParams,
+  PurchaseProductResponse,
+  PurchaseProductInput
+>(
+  '/api/v1/products/:productId/purchase',
+  ...validateProductIdParam(),
+  ...validatePurchaseProduct(),
+  validateRequestMiddleware,
+  purchaseProductController,
 );
 
 export { resellerRouter };
