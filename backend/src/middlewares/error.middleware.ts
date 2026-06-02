@@ -1,6 +1,15 @@
 import type { ErrorRequestHandler } from 'express';
 import { ApiError } from '../utils/api-error.js';
 
+const isMalformedJsonError = (error: unknown): boolean => {
+  return (
+    error instanceof SyntaxError &&
+    'status' in error &&
+    error.status === 400 &&
+    'body' in error
+  );
+};
+
 export const errorMiddleware: ErrorRequestHandler = (
   error,
   _request,
@@ -13,6 +22,16 @@ export const errorMiddleware: ErrorRequestHandler = (
       errorCode: error.errorCode,
       message: error.message,
       ...(error.details ? { details: error.details } : {}),
+    });
+
+    return;
+  }
+
+  // Surface malformed JSON as a client error so request bugs do not look like server failures.
+  if (isMalformedJsonError(error)) {
+    response.status(400).json({
+      errorCode: 'INVALID_JSON',
+      message: 'Request body contains invalid JSON.',
     });
 
     return;

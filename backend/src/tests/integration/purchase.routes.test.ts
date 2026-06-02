@@ -52,6 +52,20 @@ describe('POST /api/v1/products/:productId/purchase', () => {
     });
   });
 
+  it('returns 400 when the reseller purchase body contains invalid JSON', async () => {
+    const response = await request(app)
+      .post(`/api/v1/products/${routeProductId}/purchase`)
+      .set('Authorization', `Bearer ${env.RESELLER_API_KEY}`)
+      .set('Content-Type', 'application/json')
+      .send('{"resellerPrice"::1122101}');
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      errorCode: 'INVALID_JSON',
+      message: 'Request body contains invalid JSON.',
+    });
+  });
+
   it('returns 409 when the product has already been sold', async () => {
     const soldProduct = buildCouponProduct({
       id: routeProductId,
