@@ -5,8 +5,7 @@ import {
   getResellerProductByIdController,
   listResellerProductsController,
 } from '../controllers/reseller-product.controller.js';
-import { authenticateMiddleware } from '../middlewares/authenticate.middleware.js';
-import { authorizeRoleMiddleware } from '../middlewares/authorize-role.middleware.js';
+import { authenticateResellerApiKeyMiddleware } from '../middlewares/authenticate-reseller-api-key.middleware.js';
 import { validateRequestMiddleware } from '../middlewares/validate-request.middleware.js';
 import {
   PurchaseProductInput,
@@ -24,8 +23,7 @@ const resellerRouter = Router();
 // Scope reseller auth to reseller API paths so unrelated routes can pass through untouched.
 resellerRouter.use(
   '/api/v1',
-  authenticateMiddleware,
-  authorizeRoleMiddleware('reseller'),
+  authenticateResellerApiKeyMiddleware,
 );
 
 resellerRouter.get('/api/v1/products', listResellerProductsController);

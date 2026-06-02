@@ -6,7 +6,7 @@ A coupon marketplace with:
 
 - admin product management
 - public customer browsing and purchase flow
-- reseller JWT-protected API
+- reseller Bearer API-key protected API
 - MongoDB persistence
 - full Docker setup for backend, frontend, and MongoDB
 
@@ -33,6 +33,7 @@ ADMIN_PASSWORD_HASH=strong_password_hash_here
 JWT_SECRET=replace-with-a-secure-jwt-secret
 JWT_EXPIRES_IN=1h
 CORS_ORIGIN=http://localhost:5173
+RESELLER_API_KEY=replace-with-a-secure-reseller-api-key
 ```
 
 ### Frontend

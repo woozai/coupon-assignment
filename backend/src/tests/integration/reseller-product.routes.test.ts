@@ -1,8 +1,8 @@
 import request from 'supertest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import app from '../../app.js';
+import { env } from '../../config/env.js';
 import { productRepository } from '../../repositories/product.repository.js';
-import { authService } from '../../services/auth.service.js';
 import {
   buildCouponProduct,
   buildProductDocument,
@@ -20,8 +20,6 @@ const expectHiddenFieldsToBeAbsent = (
 };
 
 describe('reseller product read routes', () => {
-  const resellerToken = authService.issueToken('reseller-local', 'reseller');
-
   beforeEach(() => {
     vi.spyOn(console, 'log').mockImplementation((): void => undefined);
   });
@@ -39,7 +37,7 @@ describe('reseller product read routes', () => {
 
     const response = await request(app)
       .get('/api/v1/products')
-      .set('Authorization', `Bearer ${resellerToken}`);
+      .set('Authorization', `Bearer ${env.RESELLER_API_KEY}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual([
@@ -63,7 +61,7 @@ describe('reseller product read routes', () => {
 
     const response = await request(app)
       .get(`/api/v1/products/${availableProduct.id}`)
-      .set('Authorization', `Bearer ${resellerToken}`);
+      .set('Authorization', `Bearer ${env.RESELLER_API_KEY}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
@@ -87,12 +85,24 @@ describe('reseller product read routes', () => {
 
     const response = await request(app)
       .get(`/api/v1/products/${soldProduct.id}`)
-      .set('Authorization', `Bearer ${resellerToken}`);
+      .set('Authorization', `Bearer ${env.RESELLER_API_KEY}`);
 
     expect(response.status).toBe(404);
     expect(response.body).toEqual({
       errorCode: 'PRODUCT_NOT_FOUND',
       message: 'Product not found.',
+    });
+  });
+
+  it('returns 401 when the reseller API key is invalid', async () => {
+    const response = await request(app)
+      .get('/api/v1/products')
+      .set('Authorization', 'Bearer wrong-reseller-api-key');
+
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({
+      errorCode: 'UNAUTHORIZED',
+      message: 'Invalid reseller API key.',
     });
   });
 });

@@ -2,9 +2,9 @@ import { Types } from 'mongoose';
 import request from 'supertest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import app from '../../app.js';
+import { env } from '../../config/env.js';
 import { productRepository } from '../../repositories/product.repository.js';
 import { purchaseRepository } from '../../repositories/purchase.repository.js';
-import { authService } from '../../services/auth.service.js';
 import { CouponValueType } from '../../types/product.types.js';
 import {
   buildCouponProduct,
@@ -13,7 +13,6 @@ import {
 } from '../helpers/product-test-helpers.js';
 
 describe('POST /api/v1/products/:productId/purchase', () => {
-  const resellerToken = authService.issueToken('reseller-local', 'reseller');
   const routeProductId = new Types.ObjectId().toString();
 
   beforeEach(() => {
@@ -24,7 +23,7 @@ describe('POST /api/v1/products/:productId/purchase', () => {
     vi.restoreAllMocks();
   });
 
-  it('returns 401 when the reseller JWT is missing', async () => {
+  it('returns 401 when the reseller API key is missing', async () => {
     const response = await request(app)
       .post(`/api/v1/products/${routeProductId}/purchase`)
       .send({
@@ -35,6 +34,35 @@ describe('POST /api/v1/products/:productId/purchase', () => {
     expect(response.body).toEqual({
       errorCode: 'UNAUTHORIZED',
       message: 'Missing authorization header.',
+    });
+  });
+
+  it('returns 401 when the reseller API key is invalid', async () => {
+    const response = await request(app)
+      .post(`/api/v1/products/${routeProductId}/purchase`)
+      .set('Authorization', 'Bearer wrong-reseller-api-key')
+      .send({
+        resellerPrice: 120,
+      });
+
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({
+      errorCode: 'UNAUTHORIZED',
+      message: 'Invalid reseller API key.',
+    });
+  });
+
+  it('returns 400 when the reseller purchase body contains invalid JSON', async () => {
+    const response = await request(app)
+      .post(`/api/v1/products/${routeProductId}/purchase`)
+      .set('Authorization', `Bearer ${env.RESELLER_API_KEY}`)
+      .set('Content-Type', 'application/json')
+      .send('{"resellerPrice"::1122101}');
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      errorCode: 'INVALID_JSON',
+      message: 'Request body contains invalid JSON.',
     });
   });
 
@@ -53,7 +81,7 @@ describe('POST /api/v1/products/:productId/purchase', () => {
 
     const response = await request(app)
       .post(`/api/v1/products/${routeProductId}/purchase`)
-      .set('Authorization', `Bearer ${resellerToken}`)
+      .set('Authorization', `Bearer ${env.RESELLER_API_KEY}`)
       .send({
         resellerPrice: 120,
       });
@@ -81,7 +109,7 @@ describe('POST /api/v1/products/:productId/purchase', () => {
 
     const response = await request(app)
       .post(`/api/v1/products/${routeProductId}/purchase`)
-      .set('Authorization', `Bearer ${resellerToken}`)
+      .set('Authorization', `Bearer ${env.RESELLER_API_KEY}`)
       .send({
         resellerPrice: 149.99,
       });
@@ -111,7 +139,7 @@ describe('POST /api/v1/products/:productId/purchase', () => {
 
     const response = await request(app)
       .post(`/api/v1/products/${routeProductId}/purchase`)
-      .set('Authorization', `Bearer ${resellerToken}`)
+      .set('Authorization', `Bearer ${env.RESELLER_API_KEY}`)
       .send({
         resellerPrice: 120,
       });
