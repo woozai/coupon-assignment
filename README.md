@@ -89,12 +89,11 @@ npm run dev
 
 ## Admin Login
 
-Current local development login:
+Admin login is backed by the values in `backend/.env`.
 
-- email: `admin@example.com`
-- password: `admin123`
+The tracked repository should not include a real password value.
 
-If you change `ADMIN_PASSWORD_HASH` in `backend/.env`, the password changes accordingly.
+If you change `ADMIN_PASSWORD_HASH` in `backend/.env`, the local admin password changes accordingly.
 
 ## Useful Commands
 
