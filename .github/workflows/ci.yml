@@ -9,11 +9,21 @@ on:
       - main
 
 jobs:
-  test-and-build:
+  backend:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        project: [backend, frontend]
+    services:
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >
+          --health-cmd "mongosh --eval 'db.adminCommand({ ping: 1 })'" \
+          --health-interval 10s \
+          --health-timeout 5s \
+          --health-retries 5
+    env:
+      NODE_ENV: test
+      MONGODB_URI: mongodb://localhost:27017/digital-coupon-marketplace-test
 
     steps:
       - name: Checkout repository
@@ -24,16 +34,16 @@ jobs:
         with:
           node-version: 20
 
-      - name: Cache node modules
+      - name: Cache backend node modules
         uses: actions/cache@v4
         with:
-          path: ${{ matrix.project }}/node_modules
-          key: ${{ runner.os }}-node-${{ matrix.project }}-${{ hashFiles('${{ matrix.project }}/package-lock.json') }}
+          path: backend/node_modules
+          key: ${{ runner.os }}-node-backend-${{ hashFiles('backend/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-${{ matrix.project }}-
+            ${{ runner.os }}-node-backend-
 
-      - name: Install dependencies
-        working-directory: ${{ matrix.project }}
+      - name: Install backend dependencies
+        working-directory: backend
         run: |
           if [ -f package-lock.json ]; then
             npm ci
@@ -41,12 +51,55 @@ jobs:
             npm install
           fi
 
-      - name: Run project tasks
-        working-directory: ${{ matrix.project }}
+      - name: Wait for MongoDB
         run: |
-          if [ "${{ matrix.project }}" = "backend" ]; then
-            npm test
-            npm run build
+          for i in {1..30}; do
+            if nc -z localhost 27017; then
+              echo "MongoDB is ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "MongoDB did not start in time"
+          exit 1
+
+      - name: Run backend tests
+        working-directory: backend
+        run: npm test
+
+      - name: Build backend
+        working-directory: backend
+        run: npm run build
+
+  frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Cache frontend node modules
+        uses: actions/cache@v4
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-node-frontend-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-frontend-
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
           else
-            npm run build
+            npm install
           fi
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
