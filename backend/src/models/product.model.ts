@@ -58,6 +58,9 @@ const productSchema = new Schema<CouponProduct, ProductModel>(
     },
   },
   {
+    // Include Mongoose virtuals like `id` when documents are converted for mappers.
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
     timestamps: true,
     versionKey: false,
   },
