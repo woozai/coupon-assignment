@@ -29,11 +29,28 @@ const initialFormValues: ProductFormValues = {
   valueType: 'STRING',
 };
 
+const getCouponValueLabel = (valueType: CouponValueType): string => {
+  return valueType === 'IMAGE' ? 'Coupon Image URL' : 'Coupon Value';
+};
+
+const getCouponValuePlaceholder = (valueType: CouponValueType): string => {
+  return valueType === 'IMAGE'
+    ? 'https://example.com/redeem-image.png'
+    : 'STEAM-CODE-123';
+};
+
+const getCouponValueInputType = (valueType: CouponValueType): 'text' | 'url' => {
+  return valueType === 'IMAGE' ? 'url' : 'text';
+};
+
 export const AdminProductForm = ({
   isSubmitting,
   onCreateProduct,
 }: AdminProductFormProps): JSX.Element => {
   const [formValues, setFormValues] = useState<ProductFormValues>(initialFormValues);
+  const couponValueLabel = getCouponValueLabel(formValues.valueType);
+  const couponValuePlaceholder = getCouponValuePlaceholder(formValues.valueType);
+  const couponValueInputType = getCouponValueInputType(formValues.valueType);
 
   const updateFormValue = (
     field: keyof ProductFormValues,
@@ -103,14 +120,20 @@ export const AdminProductForm = ({
           />
         </label>
         <label className="field-group">
-          <span>Coupon Value</span>
+          <span>{couponValueLabel}</span>
           <input
             className="field-input"
             onChange={(event) => updateFormValue('value', event.target.value)}
-            placeholder="STEAM-CODE-123"
+            placeholder={couponValuePlaceholder}
             required
+            type={couponValueInputType}
             value={formValues.value}
           />
+          <small className="field-help">
+            {formValues.valueType === 'IMAGE'
+              ? 'Paste the URL of the image customers should receive after purchase.'
+              : 'Enter the text code or redeemable string customers should receive after purchase.'}
+          </small>
         </label>
         <label className="field-group">
           <span>Cost Price</span>
