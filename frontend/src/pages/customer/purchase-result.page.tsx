@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import { CouponValueDisplay } from '../../components/products/coupon-value-display';
 import '../../styles/admin-products.css';
 import '../../styles/customer-products.css';
 import { PurchaseResultRouteState } from '../../types/product.types';
@@ -41,7 +42,11 @@ export const PurchaseResultPage = (): JSX.Element => {
       <div className="purchase-result-banner">
         <span className="result-badge">DONE</span>
         <div>
-          <strong>{routeState.purchaseResult.value}</strong>
+          <CouponValueDisplay
+            productName={routeState.productName}
+            value={routeState.purchaseResult.value}
+            valueType={routeState.purchaseResult.valueType}
+          />
           <p className="purchase-result-copy">
             Value type: {routeState.purchaseResult.valueType}
           </p>

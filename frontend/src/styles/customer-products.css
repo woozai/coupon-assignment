@@ -183,6 +183,27 @@
   padding: 20px;
 }
 
+.coupon-value-text {
+  color: #14213d;
+  display: block;
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+.coupon-value-image-shell {
+  background: rgba(20, 33, 61, 0.04);
+  border-radius: 18px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.coupon-value-image {
+  display: block;
+  max-height: 280px;
+  object-fit: contain;
+  width: 100%;
+}
+
 .result-badge {
   align-items: center;
   background: rgba(103, 159, 84, 0.16);
