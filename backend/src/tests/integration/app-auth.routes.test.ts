@@ -1,6 +1,7 @@
 import request from 'supertest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import app from '../../app.js';
+import { env } from '../../config/env.js';
 import { authService } from '../../services/auth.service.js';
 
 describe('app health and auth routes', () => {
@@ -10,7 +11,6 @@ describe('app health and auth routes', () => {
     'admin',
     'admin@example.com',
   );
-  const resellerToken = authService.issueToken('reseller-local', 'reseller');
 
   beforeEach(() => {
     vi.spyOn(console, 'log').mockImplementation((): void => undefined);
@@ -50,27 +50,27 @@ describe('app health and auth routes', () => {
     });
   });
 
-  it('returns forbidden when an admin token hits reseller routes', async () => {
+  it('returns unauthorized when an admin JWT hits reseller routes', async () => {
     const response = await request(app)
       .get('/api/v1/products')
       .set('Authorization', `Bearer ${adminToken}`);
 
-    expect(response.status).toBe(403);
+    expect(response.status).toBe(401);
     expect(response.body).toEqual({
-      errorCode: 'FORBIDDEN',
-      message: 'Forbidden.',
+      errorCode: 'UNAUTHORIZED',
+      message: 'Invalid reseller API key.',
     });
   });
 
-  it('returns forbidden when a reseller token hits admin routes', async () => {
+  it('returns unauthorized when a reseller API key hits admin routes', async () => {
     const response = await request(app)
       .get('/api/admin/products')
-      .set('Authorization', `Bearer ${resellerToken}`);
+      .set('Authorization', `Bearer ${env.RESELLER_API_KEY}`);
 
-    expect(response.status).toBe(403);
+    expect(response.status).toBe(401);
     expect(response.body).toEqual({
-      errorCode: 'FORBIDDEN',
-      message: 'Forbidden.',
+      errorCode: 'UNAUTHORIZED',
+      message: 'Invalid authentication token.',
     });
   });
 });

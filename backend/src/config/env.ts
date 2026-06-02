@@ -50,6 +50,7 @@ export interface AppEnv {
   MONGODB_URI: string;
   NODE_ENV: AppNodeEnv;
   PORT: number;
+  RESELLER_API_KEY: string;
 }
 
 // Centralize env parsing so the rest of the app can rely on typed config values.
@@ -62,4 +63,5 @@ export const env: AppEnv = {
   MONGODB_URI: getRequiredEnv('MONGODB_URI'),
   NODE_ENV: getNodeEnv(),
   PORT: getPort(),
+  RESELLER_API_KEY: getRequiredEnv('RESELLER_API_KEY'),
 };
