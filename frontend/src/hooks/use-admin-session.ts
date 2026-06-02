@@ -22,7 +22,7 @@ export const useAdminSession = (): UseAdminSessionResult => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    // Restore the token after refresh so the admin can continue testing the flow.
+    // Restore the stored token so a page refresh does not drop the in-memory session state.
     setAccessToken(getStoredAccessToken());
   }, []);
 
@@ -33,6 +33,7 @@ export const useAdminSession = (): UseAdminSessionResult => {
     try {
       const loginResponse = await authService.loginAdmin(loginInput);
 
+      // Keep the token in session storage so the admin stays signed in during a browser tab session.
       window.sessionStorage.setItem(
         ADMIN_TOKEN_STORAGE_KEY,
         loginResponse.token,
@@ -49,6 +50,7 @@ export const useAdminSession = (): UseAdminSessionResult => {
   };
 
   const logout = (): void => {
+    // Clear both persisted and in-memory auth state so protected screens fall back immediately.
     window.sessionStorage.removeItem(ADMIN_TOKEN_STORAGE_KEY);
     setAccessToken(null);
     setErrorMessage(null);

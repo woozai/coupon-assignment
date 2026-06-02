@@ -64,7 +64,7 @@ export const useAdminProducts = (
         productInput,
       );
 
-      // Show the newly created coupon immediately so the admin gets fast confirmation.
+      // Prepend the created record so the list reflects the write without another fetch.
       setProducts((currentProducts) => [createdProduct, ...currentProducts]);
     } catch (error: unknown) {
       setErrorMessage(

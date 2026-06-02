@@ -4,6 +4,7 @@ import app from '../../app.js';
 import { authService } from '../../services/auth.service.js';
 
 describe('app health and auth routes', () => {
+  // Use real signed tokens here so these checks exercise the actual auth middleware path.
   const adminToken = authService.issueToken(
     'admin-local',
     'admin',

@@ -65,7 +65,7 @@ export const authService = {
       throw createUnauthorizedError('Invalid admin credentials.');
     }
 
-    // Keep the admin identity small and env-backed so the assignment avoids full user management.
+    // Issue a fixed admin identity so protected admin routes can rely on a stable role-bearing token.
     return authService.issueToken('admin-local', 'admin', env.ADMIN_EMAIL);
   },
 

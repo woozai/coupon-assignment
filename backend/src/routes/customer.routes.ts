@@ -14,6 +14,7 @@ interface ProductIdParams extends ParamsDictionary {
 
 const customerRouter = Router();
 
+// Keep these routes public so the frontend can browse and purchase without JWT middleware.
 customerRouter.get('/api/products', listCustomerProductsController);
 customerRouter.get<ProductIdParams>(
   '/api/products/:productId',

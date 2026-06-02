@@ -46,7 +46,7 @@ const sharedCreateOrUpdateRules = (): ValidationChain[] => {
   ];
 };
 
-// Keep route-level validation reusable so admin and reseller routes can share param rules.
+// Reuse the same id validator anywhere a product route param is accepted.
 export const validateProductIdParam = (): ValidationChain[] => {
   return [
     param('productId')
