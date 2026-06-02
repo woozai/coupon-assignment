@@ -28,7 +28,7 @@ const adminRouter = Router();
 
 // Scope admin auth to admin paths so other routers, including login, are not blocked accidentally.
 adminRouter.use(
-  '/api/admin',
+  '/api/admin/products',
   authenticateMiddleware,
   authorizeRoleMiddleware('admin'),
 );

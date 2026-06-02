@@ -1,0 +1,168 @@
+.admin-layout {
+  display: grid;
+  gap: 20px;
+}
+
+.admin-panel h2,
+.admin-product-card h3 {
+  margin: 0;
+}
+
+.admin-copy {
+  color: #546071;
+  margin-bottom: 0;
+}
+
+.admin-form-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.field-group {
+  color: #14213d;
+  display: grid;
+  font-size: 0.95rem;
+  font-weight: 600;
+  gap: 8px;
+}
+
+.field-input {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(20, 33, 61, 0.12);
+  border-radius: 14px;
+  min-height: 50px;
+  padding: 14px 16px;
+}
+
+.field-input:focus {
+  border-color: rgba(184, 92, 56, 0.72);
+  box-shadow: 0 0 0 4px rgba(184, 92, 56, 0.12);
+  outline: none;
+}
+
+.field-textarea {
+  min-height: 128px;
+  resize: vertical;
+}
+
+.form-actions {
+  align-items: end;
+  display: flex;
+}
+
+.primary-button {
+  background: linear-gradient(135deg, #14213d, #2d4969);
+  border: 0;
+  border-radius: 999px;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 0.94rem;
+  font-weight: 700;
+  min-height: 50px;
+  padding: 0 20px;
+}
+
+.primary-button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.feedback-error {
+  color: #a12e1f;
+  font-size: 0.92rem;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+.admin-list-heading,
+.admin-product-top {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.inventory-count,
+.inventory-badge {
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 8px 12px;
+  text-transform: uppercase;
+}
+
+.inventory-count {
+  background: rgba(20, 33, 61, 0.08);
+  color: #14213d;
+}
+
+.inventory-badge {
+  background: rgba(103, 159, 84, 0.16);
+  color: #2f6b2d;
+}
+
+.inventory-badge-sold {
+  background: rgba(184, 92, 56, 0.16);
+  color: #a12e1f;
+}
+
+.admin-product-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 18px;
+}
+
+.admin-product-card {
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(20, 33, 61, 0.08);
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.admin-product-card p,
+.inventory-metadata dt {
+  color: #546071;
+}
+
+.product-label {
+  color: #b85c38;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
+.inventory-metadata {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 16px 0 0;
+}
+
+.inventory-metadata div {
+  background: rgba(20, 33, 61, 0.04);
+  border-radius: 16px;
+  padding: 12px 14px;
+}
+
+.inventory-metadata dt,
+.inventory-metadata dd {
+  margin: 0;
+}
+
+.inventory-metadata dd {
+  color: #14213d;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+@media (max-width: 900px) {
+  .admin-form-grid,
+  .admin-product-grid,
+  .inventory-metadata {
+    grid-template-columns: 1fr;
+  }
+}
