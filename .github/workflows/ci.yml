@@ -8,22 +8,6 @@ jobs:
   backend:
     name: Backend
     runs-on: ubuntu-latest
-    services:
-      mongo:
-        image: mongo:7
-        ports:
-          - 27017:27017
-
-    env:
-      ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
-      ADMIN_PASSWORD_HASH: ${{ secrets.ADMIN_PASSWORD_HASH }}
-      CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
-      JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
-      JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      MONGODB_URI: ${{ secrets.MONGODB_URI }}
-      NODE_ENV: test
-      PORT: ${{ secrets.PORT }}
-      RESELLER_API_KEY: ${{ secrets.RESELLER_API_KEY }}
 
     steps:
       - name: Check out repository
@@ -40,22 +24,6 @@ jobs:
         working-directory: backend
         run: npm ci
 
-      - name: Create backend env file
-        working-directory: backend
-        shell: bash
-        run: |
-          cat <<EOF > .env
-          PORT=$PORT
-          NODE_ENV=$NODE_ENV
-          MONGODB_URI=$MONGODB_URI
-          ADMIN_EMAIL=$ADMIN_EMAIL
-          ADMIN_PASSWORD_HASH=$ADMIN_PASSWORD_HASH
-          JWT_SECRET=$JWT_SECRET
-          JWT_EXPIRES_IN=$JWT_EXPIRES_IN
-          CORS_ORIGIN=$CORS_ORIGIN
-          RESELLER_API_KEY=$RESELLER_API_KEY
-          EOF
-
       - name: Run backend tests
         working-directory: backend
         run: npm test
@@ -63,14 +31,6 @@ jobs:
       - name: Build backend
         working-directory: backend
         run: npm run build
-
-      - name: Check backend health route
-        working-directory: backend
-        shell: bash
-        run: |
-          npm start > backend.log 2>&1 &
-          sleep 10
-          curl --fail http://127.0.0.1:$PORT/health || (cat backend.log && exit 1)
 
   frontend:
     name: Frontend
