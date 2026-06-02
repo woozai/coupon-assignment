@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: [backend, frontend]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: ${{ matrix.project }}/node_modules
+          key: ${{ runner.os }}-node-${{ matrix.project }}-${{ hashFiles('${{ matrix.project }}/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ matrix.project }}-
+
+      - name: Install dependencies
+        working-directory: ${{ matrix.project }}
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+
+      - name: Run project tasks
+        working-directory: ${{ matrix.project }}
+        run: |
+          if [ "${{ matrix.project }}" = "backend" ]; then
+            npm test
+            npm run build
+          else
+            npm run build
+          fi
