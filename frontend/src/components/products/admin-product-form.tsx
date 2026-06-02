@@ -89,7 +89,7 @@ export const AdminProductForm = ({
       <p className="eyebrow">Create Coupon</p>
       <h2>Add a new coupon record</h2>
       <form className="admin-form-grid" onSubmit={handleSubmit}>
-        <label className="field-group">
+        <label className="field-group field-group-half">
           <span>Name</span>
           <input
             className="field-input"
@@ -99,17 +99,7 @@ export const AdminProductForm = ({
             value={formValues.name}
           />
         </label>
-        <label className="field-group">
-          <span>Description</span>
-          <textarea
-            className="field-input field-textarea"
-            onChange={(event) => updateFormValue('description', event.target.value)}
-            placeholder="Fast-delivery gaming wallet coupon."
-            required
-            value={formValues.description}
-          />
-        </label>
-        <label className="field-group">
+        <label className="field-group field-group-half">
           <span>Image URL</span>
           <input
             className="field-input"
@@ -119,7 +109,30 @@ export const AdminProductForm = ({
             value={formValues.imageUrl}
           />
         </label>
-        <label className="field-group">
+        <label className="field-group field-group-full">
+          <span>Description</span>
+          <textarea
+            className="field-input field-textarea"
+            onChange={(event) => updateFormValue('description', event.target.value)}
+            placeholder="Fast-delivery gaming wallet coupon."
+            required
+            value={formValues.description}
+          />
+        </label>
+        <label className="field-group field-group-half">
+          <span>Value Type</span>
+          <select
+            className="field-input"
+            onChange={(event) =>
+              updateFormValue('valueType', event.target.value as CouponValueType)
+            }
+            value={formValues.valueType}
+          >
+            <option value="STRING">String</option>
+            <option value="IMAGE">Image</option>
+          </select>
+        </label>
+        <label className="field-group field-group-half">
           <span>{couponValueLabel}</span>
           <input
             className="field-input"
@@ -135,7 +148,7 @@ export const AdminProductForm = ({
               : 'Enter the text code or redeemable string customers should receive after purchase.'}
           </small>
         </label>
-        <label className="field-group">
+        <label className="field-group field-group-half">
           <span>Cost Price</span>
           <input
             className="field-input"
@@ -147,7 +160,7 @@ export const AdminProductForm = ({
             value={formValues.costPrice}
           />
         </label>
-        <label className="field-group">
+        <label className="field-group field-group-half">
           <span>Margin Percentage</span>
           <input
             className="field-input"
@@ -161,20 +174,7 @@ export const AdminProductForm = ({
             value={formValues.marginPercentage}
           />
         </label>
-        <label className="field-group">
-          <span>Value Type</span>
-          <select
-            className="field-input"
-            onChange={(event) =>
-              updateFormValue('valueType', event.target.value as CouponValueType)
-            }
-            value={formValues.valueType}
-          >
-            <option value="STRING">String</option>
-            <option value="IMAGE">Image</option>
-          </select>
-        </label>
-        <div className="form-actions">
+        <div className="form-actions form-actions-full">
           <button className="primary-button" disabled={isSubmitting} type="submit">
             {isSubmitting ? 'Creating...' : 'Create Coupon'}
           </button>
