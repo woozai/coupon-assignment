@@ -1,35 +1,35 @@
 # Digital Coupon Marketplace
 
-## What This Project Is
+## Overview
 
-A coupon marketplace with:
+This project includes:
 
-- admin product management
+- admin coupon management
 - public customer browsing and purchase flow
-- reseller Bearer API-key protected API
+- reseller REST API protected by `Authorization: Bearer <api-key>`
 - MongoDB persistence
-- full Docker setup for backend, frontend, and MongoDB
+- Docker support for backend, frontend, and MongoDB
 
-## Main Stack
+## Stack
 
 - Backend: `Node.js`, `Express`, `TypeScript`, `MongoDB`
 - Frontend: `React`, `Vite`, `TypeScript`
 - Containers: `Docker`, `docker compose`
 
-## Environment Files
+## Environment Setup
 
 ### Backend
 
 Create `backend/.env` from `backend/.env.example`.
 
-Important values:
+Required values:
 
 ```env
 PORT=4000
 NODE_ENV=development
 MONGODB_URI=mongodb://localhost:27017/digital-coupon-marketplace
 ADMIN_EMAIL=admin@example.com
-ADMIN_PASSWORD_HASH=strong_password_hash_here
+ADMIN_PASSWORD_HASH=your-bcrypt-hash
 JWT_SECRET=replace-with-a-secure-jwt-secret
 JWT_EXPIRES_IN=1h
 CORS_ORIGIN=http://localhost:5173
@@ -44,7 +44,7 @@ Create `frontend/.env` from `frontend/.env.example`.
 VITE_API_BASE_URL=http://localhost:4000
 ```
 
-## Run Everything With Docker
+## Run With Docker
 
 From the repo root:
 
@@ -72,7 +72,7 @@ docker compose down
 docker compose up -d mongo
 ```
 
-### 2. Start backend
+### 2. Start the backend
 
 ```powershell
 cd backend
@@ -80,7 +80,7 @@ npm install
 npm run dev
 ```
 
-### 3. Start frontend
+### 3. Start the frontend
 
 ```powershell
 cd frontend
@@ -88,13 +88,16 @@ npm install
 npm run dev
 ```
 
-## Admin Login
+## Local Access
 
-Admin login is backed by the values in `backend/.env`.
+- Admin login uses `ADMIN_EMAIL` and the password that matches `ADMIN_PASSWORD_HASH`
+- Reseller API uses `RESELLER_API_KEY`
 
-The tracked repository should not include a real password value.
+Example reseller request:
 
-If you change `ADMIN_PASSWORD_HASH` in `backend/.env`, the local admin password changes accordingly.
+```bash
+curl -H "Authorization: Bearer your-reseller-api-key" http://localhost:4000/api/v1/products
+```
 
 ## Useful Commands
 
@@ -112,3 +115,13 @@ npm run build
 cd frontend
 npm run build
 ```
+
+## CI
+
+GitHub Actions checks:
+
+- backend install
+- backend tests
+- backend build
+- frontend install
+- frontend build
