@@ -33,7 +33,7 @@ jobs:
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       MONGODB_URI: ${{ secrets.MONGODB_URI }}
       NODE_ENV: test
-      PORT: 4000
+      PORT: ${{ secrets.PORT }}
       RESELLER_API_KEY: ${{ secrets.RESELLER_API_KEY }}
 
     steps:
