@@ -4,64 +4,52 @@ on:
   push:
     branches:
       - main
+      - master
+      - develop
+      - 'feature/**'
+      - 'hotfix/**'
   pull_request:
-    branches:
-      - main
 
 jobs:
   backend:
+    name: Backend Checks
     runs-on: ubuntu-latest
     services:
       mongo:
         image: mongo:7
         ports:
           - 27017:27017
-        options: >
-          --health-cmd "mongosh --eval 'db.adminCommand({ ping: 1 })'" \
-          --health-interval 10s \
-          --health-timeout 5s \
+        options: >-
+          --health-cmd "mongosh --eval \"db.adminCommand('ping')\""
+          --health-interval 10s
+          --health-timeout 5s
           --health-retries 5
+
     env:
+      ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+      ADMIN_PASSWORD_HASH: ${{ secrets.ADMIN_PASSWORD_HASH }}
+      CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
+      JWT_EXPIRES_IN: 1h
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      MONGODB_URI: ${{ secrets.MONGODB_URI }}
       NODE_ENV: test
-      MONGODB_URI: mongodb://localhost:27017/digital-coupon-marketplace-test
+      PORT: 4000
+      RESELLER_API_KEY: ${{ secrets.RESELLER_API_KEY }}
 
     steps:
-      - name: Checkout repository
+      - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-
-      - name: Cache backend node modules
-        uses: actions/cache@v4
-        with:
-          path: backend/node_modules
-          key: ${{ runner.os }}-node-backend-${{ hashFiles('backend/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-backend-
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
 
       - name: Install backend dependencies
         working-directory: backend
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
-
-      - name: Wait for MongoDB
-        run: |
-          for i in {1..30}; do
-            if nc -z localhost 27017; then
-              echo "MongoDB is ready"
-              exit 0
-            fi
-            sleep 2
-          done
-          echo "MongoDB did not start in time"
-          exit 1
+        run: npm ci
 
       - name: Run backend tests
         working-directory: backend
@@ -71,35 +59,72 @@ jobs:
         working-directory: backend
         run: npm run build
 
+      - name: Smoke test backend health route
+        working-directory: backend
+        shell: bash
+        run: |
+          npm start > backend.log 2>&1 &
+          backend_pid=$!
+          trap "kill $backend_pid" EXIT
+
+          for attempt in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:4000/health > /tmp/backend-health.json; then
+              cat /tmp/backend-health.json
+              exit 0
+            fi
+            sleep 2
+          done
+
+          cat backend.log
+          exit 1
+
   frontend:
+    name: Frontend Build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Check out repository
         uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-
-      - name: Cache frontend node modules
-        uses: actions/cache@v4
-        with:
-          path: frontend/node_modules
-          key: ${{ runner.os }}-node-frontend-${{ hashFiles('frontend/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-frontend-
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Install frontend dependencies
         working-directory: frontend
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
+        run: npm ci
 
       - name: Build frontend
         working-directory: frontend
+        env:
+          VITE_API_BASE_URL: http://localhost:4000
         run: npm run build
+
+  docker:
+    name: Docker Compose Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Create backend env file for compose validation
+        shell: bash
+        run: |
+          cat <<'EOF' > backend/.env
+          PORT=4000
+          NODE_ENV=production
+          MONGODB_URI=${{ secrets.MONGODB_URI }}
+          ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}
+          ADMIN_PASSWORD_HASH=${{ secrets.ADMIN_PASSWORD_HASH }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          JWT_EXPIRES_IN=1h
+          CORS_ORIGIN=${{ secrets.CORS_ORIGIN }}
+          RESELLER_API_KEY=${{ secrets.RESELLER_API_KEY }}
+          EOF
+
+      - name: Validate docker compose file
+        run: docker compose config
