@@ -21,7 +21,12 @@ interface ProductIdParams extends ParamsDictionary {
 
 const resellerRouter = Router();
 
-resellerRouter.use(authenticateMiddleware, authorizeRoleMiddleware('reseller'));
+// Scope reseller auth to reseller API paths so unrelated routes can pass through untouched.
+resellerRouter.use(
+  '/api/v1',
+  authenticateMiddleware,
+  authorizeRoleMiddleware('reseller'),
+);
 
 resellerRouter.get('/api/v1/products', listResellerProductsController);
 resellerRouter.get<ProductIdParams>(

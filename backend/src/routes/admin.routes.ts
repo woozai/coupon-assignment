@@ -26,7 +26,12 @@ interface ProductIdParams extends ParamsDictionary {
 
 const adminRouter = Router();
 
-adminRouter.use(authenticateMiddleware, authorizeRoleMiddleware('admin'));
+// Scope admin auth to admin paths so other routers, including login, are not blocked accidentally.
+adminRouter.use(
+  '/api/admin',
+  authenticateMiddleware,
+  authorizeRoleMiddleware('admin'),
+);
 
 adminRouter.get('/api/admin/products', listAdminProductsController);
 adminRouter.post<Record<string, never>, unknown, CreateCouponInput>(
