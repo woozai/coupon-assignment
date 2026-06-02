@@ -2,47 +2,15 @@ import { Types } from 'mongoose';
 import request from 'supertest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import app from '../../app.js';
-import { ProductDocument } from '../../models/product.model.js';
 import { productRepository } from '../../repositories/product.repository.js';
 import { purchaseRepository } from '../../repositories/purchase.repository.js';
 import { authService } from '../../services/auth.service.js';
-import { CouponProduct, CouponValueType, ProductType } from '../../types/product.types.js';
-
-const buildCouponProduct = (overrides?: Partial<CouponProduct>): CouponProduct => {
-  const now = new Date('2026-06-02T00:00:00.000Z');
-
-  return {
-    costPrice: 80,
-    createdAt: now,
-    description: 'Steam gift card',
-    id: new Types.ObjectId().toString(),
-    imageUrl: 'https://example.com/coupon.png',
-    isSold: false,
-    marginPercentage: 25,
-    minimumSellPrice: 100,
-    name: 'Steam Coupon',
-    type: ProductType.COUPON,
-    updatedAt: now,
-    value: 'STEAM-CODE-123',
-    valueType: CouponValueType.STRING,
-    ...overrides,
-  };
-};
-
-const buildFindByIdDocument = (product: CouponProduct): ProductDocument => {
-  // Keep the mocked document surface small and focused on what the purchase service reads.
-  return {
-    toObject: () => product,
-  } as unknown as ProductDocument;
-};
-
-const buildSoldProductDocument = (product: CouponProduct): ProductDocument => {
-  return {
-    id: product.id,
-    value: product.value,
-    valueType: product.valueType,
-  } as unknown as ProductDocument;
-};
+import { CouponValueType } from '../../types/product.types.js';
+import {
+  buildCouponProduct,
+  buildProductDocument,
+  buildSoldProductDocument,
+} from '../helpers/product-test-helpers.js';
 
 describe('POST /api/v1/products/:productId/purchase', () => {
   const resellerToken = authService.issueToken('reseller-local', 'reseller');
@@ -77,7 +45,7 @@ describe('POST /api/v1/products/:productId/purchase', () => {
     });
 
     vi.spyOn(productRepository, 'findById').mockResolvedValue(
-      buildFindByIdDocument(soldProduct),
+      buildProductDocument(soldProduct),
     );
     const markProductAsSoldSpy = vi
       .spyOn(purchaseRepository, 'markProductAsSold')
@@ -105,7 +73,7 @@ describe('POST /api/v1/products/:productId/purchase', () => {
     });
 
     vi.spyOn(productRepository, 'findById').mockResolvedValue(
-      buildFindByIdDocument(availableProduct),
+      buildProductDocument(availableProduct),
     );
     const markProductAsSoldSpy = vi
       .spyOn(purchaseRepository, 'markProductAsSold')
@@ -135,7 +103,7 @@ describe('POST /api/v1/products/:productId/purchase', () => {
     });
 
     vi.spyOn(productRepository, 'findById').mockResolvedValue(
-      buildFindByIdDocument(availableProduct),
+      buildProductDocument(availableProduct),
     );
     vi.spyOn(purchaseRepository, 'markProductAsSold').mockResolvedValue(
       buildSoldProductDocument(availableProduct),

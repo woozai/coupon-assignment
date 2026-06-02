@@ -1,39 +1,12 @@
-import { Types } from 'mongoose';
 import request from 'supertest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import app from '../../app.js';
-import { ProductDocument } from '../../models/product.model.js';
 import { productRepository } from '../../repositories/product.repository.js';
 import { authService } from '../../services/auth.service.js';
-import { CouponProduct, CouponValueType, ProductType } from '../../types/product.types.js';
-
-const buildCouponProduct = (overrides?: Partial<CouponProduct>): CouponProduct => {
-  const now = new Date('2026-06-02T00:00:00.000Z');
-
-  return {
-    costPrice: 80,
-    createdAt: now,
-    description: 'Steam gift card',
-    id: new Types.ObjectId().toString(),
-    imageUrl: 'https://example.com/coupon.png',
-    isSold: false,
-    marginPercentage: 25,
-    minimumSellPrice: 100,
-    name: 'Steam Coupon',
-    type: ProductType.COUPON,
-    updatedAt: now,
-    value: 'STEAM-CODE-123',
-    valueType: CouponValueType.STRING,
-    ...overrides,
-  };
-};
-
-const buildProductDocument = (product: CouponProduct): ProductDocument => {
-  // Mirror only the repository surface the service layer uses in these read flows.
-  return {
-    toObject: () => product,
-  } as unknown as ProductDocument;
-};
+import {
+  buildCouponProduct,
+  buildProductDocument,
+} from '../helpers/product-test-helpers.js';
 
 const expectHiddenFieldsToBeAbsent = (
   responseBody: Record<string, unknown>,
