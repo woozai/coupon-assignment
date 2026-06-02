@@ -1,6 +1,7 @@
 import { AdminLoginPanel } from '../../components/products/admin-login-panel';
 import { AdminProductForm } from '../../components/products/admin-product-form';
 import { AdminProductList } from '../../components/products/admin-product-list';
+import { ErrorState } from '../../components/ui/error-state';
 import { useAdminProducts } from '../../hooks/use-admin-products';
 import { useAdminSession } from '../../hooks/use-admin-session';
 import '../../styles/admin-products.css';
@@ -47,10 +48,13 @@ export const AdminProductsPage = (): JSX.Element => {
           You are authenticated and ready to create inventory records and review
           the current coupon catalog.
         </p>
-        {productsErrorMessage ? (
-          <p className="feedback-error">{productsErrorMessage}</p>
-        ) : null}
       </section>
+      {productsErrorMessage ? (
+        <ErrorState
+          message={productsErrorMessage}
+          title="Unable to sync inventory"
+        />
+      ) : null}
       <AdminProductForm
         isSubmitting={isCreating}
         onCreateProduct={createProduct}

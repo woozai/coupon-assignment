@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { CustomerProductGrid } from '../../components/products/customer-product-grid';
+import { EmptyState } from '../../components/ui/empty-state';
+import { ErrorState } from '../../components/ui/error-state';
+import { LoadingState } from '../../components/ui/loading-state';
 import { customerProductsService } from '../../services/customer-products.service';
 import '../../styles/admin-products.css';
 import '../../styles/customer-products.css';
@@ -41,17 +44,24 @@ export const CustomerProductsPage = (): JSX.Element => {
         <p className="customer-copy">
           Browse active coupon inventory and continue straight to checkout from the frontend.
         </p>
-        {errorMessage ? <p className="feedback-error">{errorMessage}</p> : null}
       </section>
-      {isLoading ? (
-        <section className="page-card customer-panel">
-          <p className="customer-copy">Loading available coupons...</p>
-        </section>
+      {errorMessage ? (
+        <ErrorState
+          message={errorMessage}
+          title="Unable to load coupons"
+        />
       ) : null}
-      {!isLoading && products.length === 0 ? (
-        <section className="page-card customer-panel">
-          <p className="customer-copy">No coupons are available right now.</p>
-        </section>
+      {isLoading ? (
+        <LoadingState
+          message="Loading available coupons..."
+          title="Available coupons"
+        />
+      ) : null}
+      {!isLoading && !errorMessage && products.length === 0 ? (
+        <EmptyState
+          message="No coupons are available right now."
+          title="No coupons available"
+        />
       ) : null}
       {!isLoading && products.length > 0 ? (
         <CustomerProductGrid products={products} />

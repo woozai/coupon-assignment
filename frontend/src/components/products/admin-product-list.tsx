@@ -1,3 +1,5 @@
+import { EmptyState } from '../ui/empty-state';
+import { LoadingState } from '../ui/loading-state';
 import { AdminProductResponse } from '../../types/product.types';
 
 interface AdminProductListProps {
@@ -18,11 +20,10 @@ export const AdminProductList = ({
 }: AdminProductListProps): JSX.Element => {
   if (isLoading) {
     return (
-      <section className="page-card admin-panel">
-        <p className="eyebrow">Inventory</p>
-        <h2>Current coupon records</h2>
-        <p className="admin-copy">Loading admin products...</p>
-      </section>
+      <LoadingState
+        message="Loading admin products..."
+        title="Current coupon records"
+      />
     );
   }
 
@@ -36,9 +37,10 @@ export const AdminProductList = ({
         <span className="inventory-count">{products.length} items</span>
       </div>
       {products.length === 0 ? (
-        <p className="admin-copy">
-          No coupons yet. Create the first record to populate the admin list.
-        </p>
+        <EmptyState
+          message="No coupons yet. Create the first record to populate the admin list."
+          title="No inventory yet"
+        />
       ) : (
         <div className="admin-product-grid">
           {products.map((product) => (

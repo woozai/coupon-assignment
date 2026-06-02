@@ -1,5 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { ErrorState } from '../../components/ui/error-state';
+import { LoadingState } from '../../components/ui/loading-state';
 import { customerProductsService } from '../../services/customer-products.service';
 import '../../styles/admin-products.css';
 import '../../styles/customer-products.css';
@@ -76,26 +78,24 @@ export const CustomerProductDetailsPage = (): JSX.Element => {
       );
     } finally {
       setIsPurchasing(false);
-      }
+    }
   };
 
   if (isLoading) {
     return (
-      <section className="page-card customer-panel">
-        <p className="customer-copy">Loading coupon details...</p>
-      </section>
+      <LoadingState
+        message="Loading coupon details..."
+        title="Coupon details"
+      />
     );
   }
 
   if (!product) {
     return (
-      <section className="page-card customer-panel">
-        <p className="eyebrow">Coupon Details</p>
-        <h2>Product unavailable</h2>
-        <p className="customer-copy">
-          {errorMessage ?? 'The requested coupon could not be loaded.'}
-        </p>
-      </section>
+      <ErrorState
+        message={errorMessage ?? 'The requested coupon could not be loaded.'}
+        title="Product unavailable"
+      />
     );
   }
 
