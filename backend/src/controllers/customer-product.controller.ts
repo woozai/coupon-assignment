@@ -7,7 +7,7 @@ interface ProductIdParams {
   productId: string;
 }
 
-// Customer read flows share the same public response shape as reseller reads, but stay unauthenticated.
+// Reuse the public product mapper so this controller stays focused on HTTP orchestration.
 export const getCustomerProductByIdController = asyncHandler(
   async (
     request: Request<ProductIdParams>,
@@ -25,6 +25,7 @@ export const listCustomerProductsController = asyncHandler(
   async (_request: Request, response: Response): Promise<void> => {
     const products = await productService.listAvailableProducts();
 
+    // Map each record through the shared public serializer before sending the response.
     response
       .status(200)
       .json(products.map((product) => mapProductToPublicResponse(product)));

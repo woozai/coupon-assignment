@@ -1,89 +1,113 @@
 # Digital Coupon Marketplace
 
-## Overview
+## What This Project Is
 
-This repository contains a digital coupon marketplace assignment built in phases.
-
-The planned stack is:
-
-- `Node.js`
-- `Express`
-- `MongoDB`
-- `React`
-- `Vite`
-- `TypeScript`
-- `Docker`
-
-The system supports:
+A coupon marketplace with:
 
 - admin product management
-- customer coupon browsing and purchase
-- reseller coupon browsing and purchase through a secured REST API
+- public customer browsing and purchase flow
+- reseller JWT-protected API
+- MongoDB persistence
+- full Docker setup for backend, frontend, and MongoDB
 
-## Current Status
+## Main Stack
 
-The repository is currently in setup and planning mode.
+- Backend: `Node.js`, `Express`, `TypeScript`, `MongoDB`
+- Frontend: `React`, `Vite`, `TypeScript`
+- Containers: `Docker`, `docker compose`
 
-What already exists:
+## Environment Files
 
-- project spec
-- phased implementation docs
-- coding rules
-- backend folder structure
-- frontend folder structure
+### Backend
 
-What is next:
+Create `backend/.env` from `backend/.env.example`.
 
-- Phase 1 backend foundation
-- backend bootstrap files
-- environment config
-- database connection
-- middleware and error handling
+Important values:
 
-## Repository Structure
-
-```text
-/
-  backend/
-  frontend/
-  docs/
-  skills/
-  Nexus Exercise – Digital Coupon Marketplace.docx
+```env
+PORT=4000
+NODE_ENV=development
+MONGODB_URI=mongodb://localhost:27017/digital-coupon-marketplace
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD_HASH=strong_password_hash_here
+JWT_SECRET=replace-with-a-secure-jwt-secret
+JWT_EXPIRES_IN=1h
+CORS_ORIGIN=http://localhost:5173
 ```
 
-## Important Docs
+### Frontend
 
-- `docs/project-spec.md`
-- `docs/project-phases.md`
-- `docs/phase-1-spec.md`
-- `docs/phase-1-task.md`
-- `docs/codex-rules.md`
+Create `frontend/.env` from `frontend/.env.example`.
 
-## Working Approach
+```env
+VITE_API_BASE_URL=http://localhost:4000
+```
 
-The project is split into phases so implementation can be done slowly and correctly:
+## Run Everything With Docker
 
-1. backend foundation
-2. core backend domain and CRUD
-3. purchase flow, auth, and tests
-4. frontend, Docker, and final polish
+From the repo root:
 
-Do not move to the next phase until the current phase is stable and reviewed.
+```powershell
+docker compose up --build
+```
 
-## Docker Goal
+App URLs:
 
-The final solution must be fully Dockerized, including:
+- frontend: `http://localhost:5173`
+- backend: `http://localhost:4000`
+- health: `http://localhost:4000/health`
 
-- backend
-- frontend
-- MongoDB
+Stop everything:
 
-Normal project startup should work through Docker without requiring extra manual local setup outside Docker.
+```powershell
+docker compose down
+```
 
-## Notes
+## Run Locally
 
-- Use TypeScript for both backend and frontend
-- Do not use `any`
-- Keep files under `250` lines when possible
-- Keep code modular, readable, and well named
-- Add comments only where they improve clarity
+### 1. Start MongoDB
+
+```powershell
+docker compose up -d mongo
+```
+
+### 2. Start backend
+
+```powershell
+cd backend
+npm install
+npm run dev
+```
+
+### 3. Start frontend
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+## Admin Login
+
+Admin login is backed by the values in `backend/.env`.
+
+The tracked repository should not include a real password value.
+
+If you change `ADMIN_PASSWORD_HASH` in `backend/.env`, the local admin password changes accordingly.
+
+## Useful Commands
+
+### Backend
+
+```powershell
+cd backend
+npm test
+npm run build
+```
+
+### Frontend
+
+```powershell
+cd frontend
+npm run build
+```

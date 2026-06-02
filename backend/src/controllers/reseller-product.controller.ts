@@ -7,7 +7,7 @@ interface ProductIdParams {
   productId: string;
 }
 
-// Keep reseller controllers thin so availability rules stay in the service layer.
+// Keep these handlers thin so availability checks remain centralized in the service layer.
 export const getResellerProductByIdController = asyncHandler(
   async (
     request: Request<ProductIdParams>,
