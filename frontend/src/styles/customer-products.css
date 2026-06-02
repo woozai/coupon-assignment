@@ -1,0 +1,150 @@
+.customer-layout {
+  display: grid;
+  gap: 20px;
+}
+
+.customer-panel h2,
+.customer-product-card h3,
+.purchase-result-panel h2 {
+  margin: 0;
+}
+
+.customer-copy {
+  color: #546071;
+  margin-bottom: 0;
+}
+
+.customer-product-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.customer-product-card,
+.details-panel {
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(20, 33, 61, 0.08);
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+.customer-product-image,
+.details-image {
+  display: block;
+  height: 220px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.customer-product-body,
+.details-body {
+  padding: 20px;
+}
+
+.customer-product-card p,
+.details-body p,
+.purchase-result-copy {
+  color: #546071;
+}
+
+.customer-product-footer {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin-top: 18px;
+}
+
+.product-link-button {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.details-layout {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+}
+
+.details-sidebar {
+  display: grid;
+  gap: 16px;
+}
+
+.purchase-form {
+  display: grid;
+  gap: 16px;
+}
+
+.purchase-price-card strong {
+  color: #14213d;
+  display: block;
+  font-size: 1.3rem;
+}
+
+.purchase-metadata {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 18px;
+}
+
+.purchase-metadata div {
+  background: rgba(20, 33, 61, 0.04);
+  border-radius: 16px;
+  padding: 12px 14px;
+}
+
+.purchase-metadata dt,
+.purchase-metadata dd {
+  margin: 0;
+}
+
+.purchase-metadata dt {
+  color: #546071;
+}
+
+.purchase-metadata dd {
+  color: #14213d;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.purchase-result-banner {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(20, 33, 61, 0.08);
+  border-radius: 22px;
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+}
+
+.result-badge {
+  align-items: center;
+  background: rgba(103, 159, 84, 0.16);
+  border-radius: 18px;
+  color: #2f6b2d;
+  display: inline-flex;
+  font-size: 0.8rem;
+  font-weight: 800;
+  height: 56px;
+  justify-content: center;
+  letter-spacing: 0.08em;
+  min-width: 56px;
+}
+
+@media (max-width: 900px) {
+  .customer-product-grid,
+  .details-layout,
+  .purchase-metadata {
+    grid-template-columns: 1fr;
+  }
+
+  .customer-product-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

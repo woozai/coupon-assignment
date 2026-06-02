@@ -25,3 +25,16 @@ export const purchaseProductController = asyncHandler<
     response.status(200).json(purchaseResult);
   },
 );
+
+export const purchaseCustomerProductController = asyncHandler<ProductIdParams>(
+  async (
+    request: Request<ProductIdParams>,
+    response: Response<PurchaseProductResponse>,
+  ): Promise<void> => {
+    const purchaseResult = await purchaseService.purchaseCustomerProduct(
+      request.params.productId,
+    );
+
+    response.status(200).json(purchaseResult);
+  },
+);

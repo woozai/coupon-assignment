@@ -1,41 +1,26 @@
 import { apiClient } from '../lib/api-client';
 import {
   PublicProductResponse,
-  PurchaseProductRequest,
   PurchaseProductResponse,
 } from '../types/product.types';
 
 export const customerProductsService = {
-  getProductById: async (
-    accessToken: string,
-    productId: string,
-  ): Promise<PublicProductResponse> => {
-    return apiClient.request<PublicProductResponse>(
-      `/api/v1/products/${productId}`,
-      {
-        accessToken,
-        method: 'GET',
-      },
-    );
-  },
-
-  listProducts: async (accessToken: string): Promise<PublicProductResponse[]> => {
-    return apiClient.request<PublicProductResponse[]>('/api/v1/products', {
-      accessToken,
+  getProductById: async (productId: string): Promise<PublicProductResponse> => {
+    return apiClient.request<PublicProductResponse>(`/api/products/${productId}`, {
       method: 'GET',
     });
   },
 
-  purchaseProduct: async (
-    accessToken: string,
-    productId: string,
-    purchaseInput: PurchaseProductRequest,
-  ): Promise<PurchaseProductResponse> => {
+  listProducts: async (): Promise<PublicProductResponse[]> => {
+    return apiClient.request<PublicProductResponse[]>('/api/products', {
+      method: 'GET',
+    });
+  },
+
+  purchaseProduct: async (productId: string): Promise<PurchaseProductResponse> => {
     return apiClient.request<PurchaseProductResponse>(
-      `/api/v1/products/${productId}/purchase`,
+      `/api/products/${productId}/purchase`,
       {
-        accessToken,
-        body: purchaseInput,
         method: 'POST',
       },
     );

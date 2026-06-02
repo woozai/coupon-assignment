@@ -37,15 +37,16 @@ export interface PublicProductResponse {
   price: number;
 }
 
-export interface PurchaseProductRequest {
-  resellerPrice: number;
-}
-
 export interface PurchaseProductResponse {
   finalPrice: number;
   productId: string;
   value: string;
   valueType: CouponValueType;
+}
+
+export interface PurchaseResultRouteState {
+  productName: string;
+  purchaseResult: PurchaseProductResponse;
 }
 
 export interface UpdateCouponRequest {
